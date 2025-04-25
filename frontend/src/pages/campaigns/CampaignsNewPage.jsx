@@ -144,6 +144,15 @@ export default function CampaignsNewPage() {
     return `w-full bg-white text-black pl-8 border-l-8 ${borderColor} border-2 p-2 rounded shadow-sm transition-all duration-150 relative`;
   };
 
+  const statusColor = (status) => {
+    switch (status) {
+      case "ACTIVA": return "border-green-400";
+      case "INACTIVA": return "border-yellow-400";
+      case "FINALIZADA": return "border-red-400";
+      default: return "border-gray-400";
+    }
+  }
+
   const Icon = ({ valid }) => valid ? (
     <FaCheckCircle className="absolute left-2 top-1/2 transform -translate-y-1/2 text-green-700" />
   ) : (
@@ -316,16 +325,33 @@ export default function CampaignsNewPage() {
           <button
             type="button"
             onClick={resetForm}
-            className="bg-red-600 text-white text-lg px-4 py-3 rounded w-[15%] h-full"
+            className="bg-red-600 text-white text-lg px-4 py-3 rounded w-1/5 h-full"
           >
             Limpiar
           </button>
         </div>
       </form>
 
-      <div className="mt-6">
-        <CampaignPreview data={campaignData} />
-      </div>
+        <div
+          className={`bg-gray-800 group p-6 rounded-xl shadow-md hover:shadow-xl hover:bg-gray-700 transition-all cursor-pointer flex flex-col justify-between h-full border-l-8 ${statusColor(campaignData.status || "PENDIENTE")} animate-fadeIn`}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <span className="text-3xl">📘</span>
+            <h2 className="text-xl font-semibold truncate">{campaignData.name || "Nombre de la campaña"}</h2>
+          </div>
+          <p className="text-sm text-gray-400 mb-4 line-clamp-3 flex-grow">
+            {campaignData.shortDescription || "Descripción corta de la campaña"}
+          </p>
+          <div className="text-right text-xs font-medium text-indigo-400">
+            {campaignData.status === "IN_PROGRESS"
+              ? "En curso"
+              : campaignData.status === "INACTIVE"
+              ? "Inactiva"
+              : campaignData.status === "FINISHED"
+              ? "Finalizada"
+              : "Pendiente"}
+          </div>
+        </div>
     </div>
   );
 }

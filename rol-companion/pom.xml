@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>org.rolintensificado</groupId>
 	<artifactId>rol-companion</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>rol-companion</name>
 	<description>A companion for rol games</description>
 	<url/>
