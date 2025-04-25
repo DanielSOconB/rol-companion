@@ -29,17 +29,24 @@ export default function CampaignsNewPage() {
   const [restoredDraft, setRestoredDraft] = useState(false);
   const [loading, setLoading] = useState(false);
   const [slugError, setSlugError] = useState("");
+  const [createdCampaigns, setCreatedCampaigns] = useState([]);
 
-  useEffect(() => {
-    axios.get("http://localhost:8081/api/games").then((res) => setGames(res.data));
-    axios.get("http://localhost:8081/api/players").then((res) => setPlayers(res.data));
+useEffect(() => {
+  axios.get("http://localhost:8081/api/games").then((res) => setGames(res.data));
+  axios.get("http://localhost:8081/api/players").then((res) => setPlayers(res.data));
 
-    const draft = localStorage.getItem("campaignDraft");
-    if (draft) {
-      setRestoredDraft(true);
-      toast.info("Se ha restaurado un borrador anterior. Puedes descartarlo si lo deseas.");
-    }
-  }, []);
+  const draft = localStorage.getItem("campaignDraft");
+  if (draft) {
+    setRestoredDraft(true);
+    toast.info("Se ha restaurado un borrador anterior. Puedes descartarlo si lo deseas.");
+  }
+
+  return () => {
+    setCreatedCampaigns([]);
+  };
+}, []);
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -61,8 +68,9 @@ export default function CampaignsNewPage() {
         ...campaignData,
         status: undefined,
       };
-      await axios.post("http://localhost:8081/api/campaigns", payload);
+      const res = await axios.post("http://localhost:8081/api/campaigns", payload);
       toast.success("Campaña creada exitosamente");
+      setCreatedCampaigns([res.data, ...createdCampaigns]);
       localStorage.removeItem("campaignDraft");
       setCampaignData(initialCampaignData);
     } catch (err) {
@@ -331,7 +339,6 @@ export default function CampaignsNewPage() {
           </button>
         </div>
       </form>
-
         <div
           className={`bg-gray-800 group p-6 rounded-xl shadow-md hover:shadow-xl hover:bg-gray-700 transition-all cursor-pointer flex flex-col justify-between h-full border-l-8 ${statusColor(campaignData.status || "PENDIENTE")} animate-fadeIn`}
         >
@@ -339,19 +346,40 @@ export default function CampaignsNewPage() {
             <span className="text-3xl">📘</span>
             <h2 className="text-xl font-semibold truncate">{campaignData.name || "Nombre de la campaña"}</h2>
           </div>
-          <p className="text-sm text-gray-400 mb-4 line-clamp-3 flex-grow">
-            {campaignData.shortDescription || "Descripción corta de la campaña"}
-          </p>
-          <div className="text-right text-xs font-medium text-indigo-400">
-            {campaignData.status === "IN_PROGRESS"
-              ? "En curso"
-              : campaignData.status === "INACTIVE"
-              ? "Inactiva"
-              : campaignData.status === "FINISHED"
-              ? "Finalizada"
-              : "Pendiente"}
-          </div>
+            <p className="text-sm text-gray-400 mb-4 line-clamp-3 flex-grow">
+              {campaignData.shortDescription || "Descripción corta de la campaña"}
+            </p>
+            <div className="text-right text-xs font-medium text-indigo-400">
+              {campaignData.status === "IN_PROGRESS"
+                ? "En curso"
+                : campaignData.status === "INACTIVE"
+                ? "Inactiva"
+                : campaignData.status === "FINISHED"
+                ? "Finalizada"
+                : "Pendiente"}
+            </div>
         </div>
-    </div>
+
+        {createdCampaigns.map((camp) => (
+          <div
+            key={camp.id}
+            className="animate-slideInDown cursor-pointer"
+            onClick={() => window.location.href = `/campaigns/${camp.slug}`}
+          >
+            <div
+              className={`bg-gray-800 group p-6 rounded-xl shadow-md hover:shadow-xl hover:bg-gray-700 transition-all cursor-pointer flex flex-col justify-between h-full border-l-8 border-yellow-400`}
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <span className="text-3xl">📘</span>
+                <h2 className="text-xl font-semibold truncate">{camp.name || "Nombre de la campaña"}</h2>
+              </div>
+              <p className="text-sm text-gray-400 mb-4 line-clamp-3 flex-grow">
+                {camp.shortDescription || "Descripción corta de la campaña"}
+              </p>
+              <div className="text-right text-xs font-medium text-indigo-400">Pendiente</div>
+            </div>
+          </div>
+        ))}
+      </div>
   );
 }
