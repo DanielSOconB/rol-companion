@@ -27,7 +27,7 @@ public class Campaign {
     @Column(length = 200)
     private String shortDescription;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String longDescription;
 
     @Enumerated(EnumType.STRING)
@@ -37,7 +37,7 @@ public class Campaign {
     @ManyToOne(optional = false)
     private Player gameMaster;
 
-    @OneToMany(mappedBy = "campaign")
+    @OneToMany(mappedBy = "campaign", orphanRemoval = true)
     private List<Session> sessions = new ArrayList<>();
 
     @OneToMany(mappedBy = "campaign")

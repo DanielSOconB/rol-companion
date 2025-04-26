@@ -364,7 +364,7 @@ useEffect(() => {
           <div
             key={camp.id}
             className="animate-slideInDown cursor-pointer"
-            onClick={() => window.location.href = `/campaigns/${camp.slug}`}
+            onClick={() => window.location.href = `/campaigns/slugs/${camp.slug}`}
           >
             <div
               className={`bg-gray-800 group p-6 rounded-xl shadow-md hover:shadow-xl hover:bg-gray-700 transition-all cursor-pointer flex flex-col justify-between h-full border-l-8 border-yellow-400`}

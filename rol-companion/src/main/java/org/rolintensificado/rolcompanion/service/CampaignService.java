@@ -5,14 +5,14 @@ import org.rolintensificado.rolcompanion.model.Campaign;
 import org.rolintensificado.rolcompanion.model.CampaignStatus;
 import org.rolintensificado.rolcompanion.model.Game;
 import org.rolintensificado.rolcompanion.model.Player;
-import org.rolintensificado.rolcompanion.repository.CampaignRepository;
-import org.rolintensificado.rolcompanion.repository.GameRepository;
-import org.rolintensificado.rolcompanion.repository.PlayerRepository;
+import org.rolintensificado.rolcompanion.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,7 +29,14 @@ public class CampaignService {
     private PlayerRepository playerRepository;
 
     @Autowired
+    private SessionRepository sessionRepository;
+
+    @Autowired
+    private PlayerInCampaignRepository playerInCampaignRepository;
+
+    @Autowired
     private PlayerService playerService;
+
     @Autowired
     private GameService gameService;
 
@@ -56,13 +63,13 @@ public class CampaignService {
         campaign.setStartDate(dto.getStartDate() != null ? LocalDate.parse(dto.getStartDate()) : LocalDate.now());
 
         if (dto.getGameId() == null) {
-            throw new IllegalArgumentException("El sistema es obligatorio.");
+            throw new IllegalArgumentException("System is required.");
         }
         if (dto.getDmId() == null) {
-            throw new IllegalArgumentException("El director es obligatorio.");
+            throw new IllegalArgumentException("Game Master is required.");
         }
         if (dto.getName() == null || dto.getName().isBlank()) {
-            throw new IllegalArgumentException("El nombre es obligatorio.");
+            throw new IllegalArgumentException("Name is required.");
         }
 
 
@@ -91,7 +98,41 @@ public class CampaignService {
         return campaignRepository.findById(id);
     }
 
-    public void deleteCampaign(UUID id) {
-        campaignRepository.deleteById(id);
+    public Optional<Campaign> findCampaignBySlug(String slug) {
+        return campaignRepository.findBySlug(slug);
     }
+
+    @Transactional
+    public void deleteCampaign(UUID campaignId) {
+        // Log para verificar el ID recibido
+        System.out.println("Intentando eliminar campaña con ID: " + campaignId);
+
+        Campaign campaign = campaignRepository.findById(campaignId)
+                .orElseThrow(() -> {
+                    System.out.println("Campaña no encontrada con ID: " + campaignId);
+                    return new NoSuchElementException("La campaña no existe");
+                });
+
+        // Log para confirmar que la campaña fue encontrada
+        System.out.println("Campaña encontrada: " + campaign.getName());
+
+        sessionRepository.deleteAllByCampaign(campaign);
+        campaignRepository.deleteById(campaignId);
+    }
+
+    @Transactional
+    public void updateCampaignStatus(UUID id, String newStatus) {
+        Campaign campaign = campaignRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Campaign " + id + " not found"));
+
+        try {
+            CampaignStatus status = CampaignStatus.valueOf(newStatus.toUpperCase());
+            campaign.setStatus(status);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid State: " + newStatus);
+        }
+
+        campaignRepository.save(campaign);
+    }
+
 }

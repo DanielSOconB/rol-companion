@@ -9,6 +9,7 @@ import NotesPage from './pages/NotesPage'
 import UsersPage from './pages/UsersPage'
 import SessionsPage from './pages/SessionsPage'
 import CampaignsNewPage from './pages/campaigns/CampaignsNewPage'
+import CampaignDetails from './pages/campaigns/CampaignDetails'
 
 
 export default function AppRouter() {
@@ -25,6 +26,7 @@ export default function AppRouter() {
           <Route path="/notes" element={<NotesPage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/sessions" element={<SessionsPage />} />
+          <Route path="/campaigns/slugs/:slug" element={<CampaignDetails />} />
         </Route>
       </Routes>
     </Router>

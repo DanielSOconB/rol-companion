@@ -10,4 +10,8 @@ public interface CampaignRepository extends CrudRepository<Campaign, UUID> {
 
     Optional<Campaign> findBySlug(String slug);
 
+    void deleteById(UUID id);
+
+    boolean existsById(UUID id);
+
 }

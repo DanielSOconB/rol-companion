@@ -48,7 +48,7 @@ import { useEffect, useState } from 'react'
               {filteredCampaigns.slice(0, 3).map(c => (
                 <div
                   key={c.id}
-                  onClick={() => navigate(`/campaigns/${c.slug}`)}
+                  onClick={() => navigate(`/campaigns/slugs/${c.slug}`)}
                   className={`bg-gray-800 group p-6 rounded-xl shadow-md hover:shadow-xl hover:bg-gray-700 transition-all cursor-pointer flex flex-col justify-between h-full border-l-8 ${statusColor(c.status)} animate-fadeIn`}
                 >
                   <div className="flex items-center gap-3 mb-2">
