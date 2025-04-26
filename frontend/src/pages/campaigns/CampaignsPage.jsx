@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CampaignCard from "../../components/CampaignCard";
 
 export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState([]);
@@ -88,20 +89,7 @@ export default function CampaignsPage() {
 
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 mt-10">
           {filtered.map(c => (
-            <div
-              key={c.id}
-              onClick={() => navigate(`/campaigns/slugs/${c.slug}`)}
-              className={`bg-gray-800 group p-6 rounded-xl shadow-md hover:shadow-xl hover:bg-gray-700 transition-all cursor-pointer flex flex-col justify-between h-full border-l-8 ${statusColor(c.status)} animate-fadeIn`}
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-3xl">📘</span>
-                <h2 className="text-xl font-semibold truncate">{c.name}</h2>
-              </div>
-              <p className="text-sm text-gray-400 mb-4 line-clamp-3 flex-grow">{c.shortDescription || 'Sin descripción'}</p>
-              <div className="text-right text-xs font-medium text-indigo-400">
-                {c.status === 'IN_PROGRESS' ? 'En curso' : c.status === 'INACTIVE' ? 'Inactiva' : c.status === 'FINISHED' ? 'Finalizada' : 'Pendiente'}
-              </div>
-            </div>
+            <CampaignCard key={c.id} campaign={c} />
           ))}
         </div>
 
